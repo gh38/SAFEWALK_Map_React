@@ -680,6 +680,10 @@ return (
                   onClick={() => {
                     searchAddress(startAddress, "start");
                     searchAddress(endAddress, "end");
+                    map.getLayers().forEach(layer => {
+                      if (layer.get('name') === 'dstLayer') {
+                        map.removeLayer(layer);
+                      }});
                     fetchtest(sttPoint, dstPoint);
                   }}
                 >
