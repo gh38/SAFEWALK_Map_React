@@ -132,7 +132,7 @@ function getCurrentLocation(){
   
   let sttPoint, dstPoint;
 
-  function fetchtest(sttPoint, dstPoint){
+  function setRoute(sttPoint, dstPoint){
 
     const dstSource = new VectorWMS();
     let dstLayer = new Vector({
@@ -160,7 +160,7 @@ function getCurrentLocation(){
   
       const coords = [];
       
-      coords.push(start_x, start_y)
+      coords.push(start_x, start_y);
   
       for(var i=0; i<(data.route).length; i++){
   
@@ -173,6 +173,9 @@ function getCurrentLocation(){
           map.getView().setZoom(17);
         }
       }
+
+      coords.push(arrive_x, arrive_y);
+
   
       let dstIconStyle = new Style({
         image: new Icon({
@@ -182,7 +185,7 @@ function getCurrentLocation(){
       });
     
       let dstMarker = new Feature({
-        geometry: new Point([data.route[(data.route.length-1)].X, data.route[(data.route.length-1)].Y]),
+        geometry: new Point([arrive_x, arrive_y]),
         name: "destination",
       });
     
@@ -251,7 +254,7 @@ const Map = ({ children }) => {
     onoffWMS(); 
 
     //route();
-    //fetchtest();
+    //setRoute();
     
     setMapObj({ map })  
     return () => map.setTarget(undefined) // 렌더링 누적 방지 
@@ -684,7 +687,7 @@ return (
                       if (layer.get('name') === 'dstLayer') {
                         map.removeLayer(layer);
                       }});
-                    fetchtest(sttPoint, dstPoint);
+                    setRoute(sttPoint, dstPoint);
                   }}
                 >
                   검색
