@@ -17,9 +17,9 @@ import $ from 'jquery';
 const safeKey = process.env.REACT_APP_SAFE_KEY;
 const mapKey = process.env.REACT_APP_MAP_KEY;
 
-export let map;
- let currentMarker;	// 현 위치 마커
-export let currentLoc;	// 현 위치 좌표
+let map;
+let currentMarker;	// 현 위치 마커
+let currentLoc;	// 현 위치 좌표
 let grade = null;
 
 // 1. wmsLayer - 범죄주의구간
