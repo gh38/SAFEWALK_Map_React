@@ -409,16 +409,15 @@ button {
 */
 
 .sidebar {
-  height: 100%;
-  width: 0px;
+  height: 0px;
+  width: 100%;
   position: fixed;
   z-index: 100;
   top: 0;
   left: 0;
-  background-color: #fff;
-  overflow-x: hidden;
-  transition: 0.3s;/*펼침속도*/
-  padding-top: 60px;
+  background-color: rgb(235, 245, 248);
+  overflow-y: hidden;
+  transition: 0.2s;/*펼침속도*/
   }
   .sidebar a {
   padding: 8px 8px 8px 32px;
@@ -426,7 +425,7 @@ button {
   font-size: 20px;
   color: #818181;
   display: block;
-  transition: 0.3s;
+  transition: 0.2s;
   }
   /*메뉴열기 hover 시*/
   .sidebar a:hover {
@@ -434,8 +433,12 @@ button {
   }
   .sidebar .closebtn {
   position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
+  top: 1rem;
+  right: 1rem;
+  font-size: 4rem;
+  color: #848383;
   }
+
+  .sidebar .closebtn:hover {
+    color: #545454;
+    }

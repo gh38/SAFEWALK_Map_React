@@ -236,11 +236,11 @@ function getCurrentLocation(){
   }
 
   function openMenu() {
-    document.querySelector('.sidebar').style.width = "100%";
+    document.querySelector('.sidebar').style.height = "100%";
     document.querySelector('.nav-safe').style.display = 'none';
   }
   function closeMenu() { 
-    document.querySelector('.sidebar').style.width = "0";
+    document.querySelector('.sidebar').style.height = "0";
     document.querySelector('.nav-safe').style.display = 'block';
   }
 
