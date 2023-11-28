@@ -235,6 +235,14 @@ function getCurrentLocation(){
     });
   }
 
+  function openMenu() {
+    document.querySelector('.sidebar').style.width = "100%";
+    document.querySelector('.nav-safe').style.display = 'none';
+  }
+  function closeMenu() { 
+    document.querySelector('.sidebar').style.width = "0";
+    document.querySelector('.nav-safe').style.display = 'block';
+  }
 
 const Map = ({ children }) => {
   const [mapObj, setMapObj] = useState({});
@@ -576,7 +584,10 @@ const handleAddressChange = (value, type) => {
   }
 };
 
-return (
+return (<>
+  <div className="sidebar">
+      <a className="closebtn" onClick={closeMenu}>×</a>
+    </div>
   <div className="container">
     <nav>
       <div className="nav-container">
@@ -611,7 +622,8 @@ return (
               </ul>
             )}
           </div>
-          <button className="nav-safe" onClick={handleSafeRouteClick}>
+          <button className="nav-safe" onClick={() => openMenu()}>
+          {/* handleSafeRouteClick */}
           안전
           <br />
           길찾기
@@ -752,6 +764,7 @@ return (
       </div>
     </main>
   </div>
+  </>
 );
 };
 
