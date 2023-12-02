@@ -1,19 +1,19 @@
-.container{
-  position : fixed;
+.container {
+  position: fixed;
   overflow: hidden;
   height: 100%;
   width: 100%;
 }
 
-div.olControlScaleLine { 
-  left: auto; 
-  bottom:10px; 
-  font-size:xx-small; 
-  right:10px; 
-  background-color:white; 
-  margin: 20 20 20 20; 
-  border:solid white 10px; 
-  }     
+div.olControlScaleLine {
+  left: auto;
+  bottom: 10px;
+  font-size: xx-small;
+  right: 10px;
+  background-color: white;
+  margin: 20 20 20 20;
+  border: solid white 10px;
+}
 
 @font-face {
   font-family: "TheJamsil5Bold";
@@ -38,16 +38,21 @@ html {
 
 nav {
   /* background-color: #e69a06; */
+  background-color: transparent;
 }
 
 .nav-container {
+  position: absolute;
+  top: 0; /* 상위 요소에 대한 상대 위치 설정 */
   width: 100%;
-  height: 100%;
+  height: 59px;
   padding: 1rem 0;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  background-color: transparent;
+  top: 0; /* 지도 상단에 위치하도록 top을 0으로 설정합니다. */
 }
 
 .nav-title {
@@ -55,14 +60,16 @@ nav {
 }
 
 .nav-safe {
-  position : absolute;
-  right: 0;
-  width: 5.5rem;
+  position: absolute;
+  right: 4px;
+  width: 5rem;
   font-size: 1.5rem;
   border: 0;
   cursor: pointer;
   font-family: inherit;
-  background-color: transparent;
+  background-color: rgb(142, 170, 231);
+  padding: 2px;
+  border-radius: 10px;
 }
 
 .nav-safe:hover {
@@ -101,8 +108,8 @@ nav {
 
 .inner {
   padding: 0 1.5rem;
-  width: 100%;    /* 1024 이상 잘림 방지*/
-  height: 100%;   /* 확장 */
+  width: 100%; /* 1024 이상 잘림 방지*/
+  height: 100%; /* 확장 */
 }
 
 @media all and (min-width: 1024px) {
@@ -121,12 +128,12 @@ body {
 */
 
 nav {
-  height: 59px;
+  height: 1px;
 }
 
 main {
   position: relative;
-  height: 100%;   /* 확장 */
+  height: 100%; /* 확장 */
   display: flex;
   flex-direction: column;
 }
@@ -172,7 +179,6 @@ main {
   background-color: #555;
 }
 
-
 #map {
   position: relative; /* 이를 통해 map 내부의 자식 요소들에게 절대 위치를 지정할 수 있게 됩니다. */
 }
@@ -188,24 +194,24 @@ main {
   visibility: hidden;
 }
 
-.switch_wrapper{
+.switch_wrapper {
   position: absolute;
   margin-top: 0.4rem;
   margin-right: 0.3rem;
   height: 50px;
   width: 48px;
   align-items: center;
-  top:0;
+  top: 0;
   right: 0;
   z-index: 20;
 }
 
-.chkbox{
+.chkbox {
   position: absolute;
   appearance: none;
 }
 
-.switch_label{
+.switch_label {
   position: relative;
   width: 48px;
   height: 24px;
@@ -216,11 +222,11 @@ main {
   transition: 0.3s;
 }
 
-.switch_label:hover{
+.switch_label:hover {
   background-color: rgb(228, 225, 225);
 }
 
-.btn{
+.btn {
   position: absolute;
   width: 14px;
   height: 14px;
@@ -234,17 +240,16 @@ main {
 
 /* 체크 */
 
-.chkbox:checked+.switch_label{
+.chkbox:checked + .switch_label {
   background: rgb(247, 117, 57);
   border: 2px solid rgb(247, 117, 57);
-  
 }
 
-.chkbox:checked+.switch_label:hover{
+.chkbox:checked + .switch_label:hover {
   background-color: rgb(255, 132, 101);
 }
 
-.chkbox:checked+.switch_label .btn{
+.chkbox:checked + .switch_label .btn {
   left: 28px;
   background-color: white;
   box-shadow: 1px black;
@@ -260,9 +265,10 @@ main {
   bottom: 12px;
   left: -50px;
   min-width: 250px;
-  z-index: 0;  
+  z-index: 0;
 }
-.ol-popup:after, .ol-popup:before {
+.ol-popup:after,
+.ol-popup:before {
   top: 100%;
   border: solid transparent;
   content: " ";
@@ -283,61 +289,61 @@ main {
   left: 48px;
   margin-left: -11px;
 }
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal-content {
-    position: absolute;
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .ol-zoom.ol-unselectable.ol-control{
-    top:unset;
-    left: unset;
-    position :absolute;
-    right: .5rem;
-    bottom: .5rem;
-  }
+.modal-content {
+  position: absolute;
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-  #searchResults {
-    position: absolute;
-    top: 100%; /* 입력 필드의 높이만큼 아래에 위치 */
-    justify-content: center;
-    align-items: center;
-    max-width: 300px; /* 최대 너비를 300px로 설정 */
-    width: calc(100% - 20px); /* 부모 요소에 맞추어 너비를 100%로 설정 */
-    z-index: 30;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-top: none;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    overflow-y: auto; /* 세로 스크롤 허용 */
-    max-height: 300px; /* 최대 높이 설정 */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 결과 창에 그림자 효과 추가 */
-  }
-  
-  #searchResults li {
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  #searchResults li:hover {
-    background-color: #f7f7f7;
-  }
+.ol-zoom.ol-unselectable.ol-control {
+  top: unset;
+  left: unset;
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+}
+
+#searchResults {
+  position: absolute;
+  top: 100%; /* 입력 필드의 높이만큼 아래에 위치 */
+  justify-content: center;
+  align-items: center;
+  max-width: 300px; /* 최대 너비를 300px로 설정 */
+  width: calc(100% - 20px); /* 부모 요소에 맞추어 너비를 100%로 설정 */
+  z-index: 30;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto; /* 세로 스크롤 허용 */
+  max-height: 300px; /* 최대 높이 설정 */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 결과 창에 그림자 효과 추가 */
+}
+
+#searchResults li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+#searchResults li:hover {
+  background-color: #f7f7f7;
+}
 
 .search-bar-container {
   height: 3rem;
@@ -346,7 +352,7 @@ main {
   top: 0px; /* 상단에서의 위치 */
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000; /* 다른 요소 위에 표시 */
+  z-index: 100; /* 다른 요소 위에 표시 */
   display: flex;
   background-color: white;
   flex-direction: row; /* 가로 방향으로 배열 */
@@ -373,7 +379,7 @@ main {
   top: 100%; /* 입력란 바로 아래 */
   left: 0;
   right: 0;
-  z-index: 1000; /* 다른 요소 위에 표시 */
+  z-index: 100; /* 다른 요소 위에 표시 */
   background-color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto; /* 넘치면 스크롤 */
@@ -390,7 +396,7 @@ main {
   background-color: #ddd; /* 마우스 오버시 배경색 변경 */
 }
 
-.button-container{
+.button-container {
   height: 100%;
   width: 3rem;
 }
@@ -398,7 +404,7 @@ main {
 .button-container button {
   height: 100%;
   width: 100%;
-  font-size: 1rem;
+  font-size: 1.2rem;
   padding: 0.1rem;
 }
 
@@ -415,30 +421,128 @@ button {
   z-index: 100;
   top: 0;
   left: 0;
-  background-color: rgb(235, 245, 248);
+  background-color: rgb(244, 246, 247);
   overflow-y: hidden;
-  transition: 0.2s;/*펼침속도*/
-  }
-  .sidebar a {
+  transition: 0.2s; /*펼침속도*/
+}
+.sidebar a {
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 20px;
   color: #818181;
   display: block;
   transition: 0.2s;
-  }
-  /*메뉴열기 hover 시*/
-  .sidebar a:hover {
+}
+/*메뉴열기 hover 시*/
+.sidebar a:hover {
   color: #f1f1f1;
-  }
-  .sidebar .closebtn {
+}
+.sidebar .closebtn {
   position: absolute;
   top: 1rem;
   right: 1rem;
   font-size: 4rem;
   color: #848383;
-  }
+  z-index: 1000;
+}
 
-  .sidebar .closebtn:hover {
-    color: #545454;
-    }
+.sidebar .closebtn:hover {
+  color: #545454;
+}
+
+.autocomplete-container {
+  display: block; /* 확실히 보이도록 설정 */
+  visibility: visible; /* 가시성 확보 */
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #d4d4d4;
+  z-index: 100;
+  width: calc(100% - 2rem); /* 적절한 너비 설정 */
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.autocomplete-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.autocomplete-item:hover {
+  background-color: #f1f1f1;
+}
+
+.destination-search-container {
+  position: relative; /* 상대적 위치 설정 */
+}
+
+.autocomplete-container {
+  position: absolute; /* 절대 위치 설정 */
+  top: 100%; /* 입력란 바로 아래에 위치 */
+  left: 0;
+  width: 100%; /* 부모 컨테이너의 너비와 동일하게 설정 */
+  background-color: white;
+  border: 1px solid #ccc;
+  z-index: 10; /* 다른 요소 위에 표시 */
+  max-height: 400px; /* 최대 높이 설정 */
+  overflow-y: auto; /* 스크롤 가능하게 설정 */
+}
+
+.autocomplete-container div {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee; /* 각 항목 사이에 구분선 추가 */
+}
+
+.autocomplete-container div:hover {
+  background-color: #f7f7f7;
+}
+
+.search-fields-container {
+  position: absolute;
+  top: 25px;
+  display: flex; /* flexbox 레이아웃 사용 */
+  align-items: center; /* 세로 방향 중앙 정렬 */
+  gap: 10px; /* 요소들 사이의 간격 */
+}
+
+.route-container {
+  display: flex;
+  position: fixed; /* 고정된 위치에 요소를 배치 */
+  flex-direction: row; /* 가로 정렬 */
+  position: fixed;
+  bottom: 10px; /* 하단에서 10px 떨어진 위치 */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: flex; /* 또는 필요한 스타일 */
+}
+
+#route1 {
+  /* 경로 1에 대한 스타일 */
+  color: blue;
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+  height: 40px;
+  width: 60px;
+}
+
+#route2 {
+  /* 경로 2에 대한 스타일 */
+  color: green;
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+  height: 40px;
+  width: 60px;
+}

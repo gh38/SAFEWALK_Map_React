@@ -10,7 +10,7 @@ function App() {
       <div id="map" style={{ position: 'relative', width: '100%', height: 'calc(100% - 59px - 50px)' }}>
       </div>
 
-      <script type="module" src="./Map/Map.jsx"></script> 
+      <script type="module" src="./Map/Map.jsx"></script>
     </>
   )
 }
