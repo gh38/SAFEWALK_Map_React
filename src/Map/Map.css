@@ -59,21 +59,29 @@ nav {
   font-size: 3rem;
 }
 
+.nav-safe:hover {
+  background-color: #bcbcbc;
+}
+
 .nav-safe {
   position: absolute;
   right: 4px;
-  width: 5rem;
-  font-size: 1.5rem;
+  width: 4.9rem; /* 버튼의 너비 */
+  height: 4.8rem; /* 버튼의 높이 */
   border: 0;
   cursor: pointer;
-  font-family: inherit;
-  background-color: rgb(142, 170, 231);
+  background-color: rgba(255, 255, 255, 0);
   padding: 2px;
   border-radius: 10px;
+  display: flex; /* Flexbox를 사용하여 내용을 중앙에 배치 */
+  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center; /* 세로 중앙 정렬 */
+  overflow: hidden; /* 이미지가 버튼 크기를 초과할 경우 숨김 처리 */
 }
 
-.nav-safe:hover {
-  background-color: #bcbcbc;
+.nav-safe img {
+  max-width: 100%; /* 이미지가 버튼 너비를 넘지 않도록 제한 */
+  height: auto; /* 이미지 높이를 비율에 맞춰 자동 조절 */
 }
 
 .category-title {
@@ -424,6 +432,7 @@ button {
   background-color: rgb(244, 246, 247);
   overflow-y: hidden;
   transition: 0.2s; /*펼침속도*/
+  display: block;
 }
 .sidebar a {
   padding: 8px 8px 8px 32px;
@@ -510,8 +519,9 @@ button {
   display: flex;
   position: fixed; /* 고정된 위치에 요소를 배치 */
   flex-direction: row; /* 가로 정렬 */
+  justify-content: center; /* 중앙 정렬 */
   position: fixed;
-  bottom: 10px; /* 하단에서 10px 떨어진 위치 */
+  bottom: 70px; /* 하단에서 10px 떨어진 위치 */
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
@@ -527,22 +537,49 @@ button {
 
 #route1 {
   /* 경로 1에 대한 스타일 */
-  color: blue;
+  color: rgb(19, 19, 39);
   padding: 10px;
   margin: 5px;
-  border: 1px solid black;
+  border: 1px solid rgb(221, 230, 247);
+  background-color: rgba(221, 230, 247, 0.8);
   cursor: pointer;
-  height: 40px;
-  width: 60px;
+  height: 50px;
+  width: 80px;
+  margin-right: 10px;
+  flex-direction: column; /* 요소들을 세로로 정렬 */
+  white-space: pre-line;
 }
 
 #route2 {
   /* 경로 2에 대한 스타일 */
-  color: green;
+  color: rgb(13, 22, 17);
   padding: 10px;
   margin: 5px;
-  border: 1px solid black;
+  border: 1px solid rgb(223, 241, 225);
+  background-color: rgba(230, 247, 232, 0.8);
   cursor: pointer;
-  height: 40px;
-  width: 60px;
+  height: 50px;
+  width: 80px;
+  flex-direction: column; /* 요소들을 세로로 정렬 */
+  white-space: pre-line;
+
+}
+
+.sidebar.active {
+  /* active 클래스가 있을 때 사이드바 표시 */
+  display: block;
+  height: 100%;
+  /* 추가적인 활성화 스타일 */
+}
+
+#searchInput {
+  background-color: rgba(255, 255, 255, 0.75); /* 흰색 배경에 50% 투명도 */
+  border: none;
+  color: black; /* 텍스트 색상 */
+  /* 기타 스타일링 속성 추가 */
+}
+
+#searchBtn {
+  background-color: rgba(3, 3, 3, 0.75);   border: none;
+  color: rgb(240, 233, 233); /* 텍스트 색상 */
 }

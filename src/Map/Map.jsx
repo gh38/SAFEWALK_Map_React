@@ -12,9 +12,9 @@ import {
   Zoom,
 } from "ol/control";
 import { fromLonLat, get as getProjection } from "ol/proj";
-import { Tile as TileLayer, Vector, Marker } from "ol/layer";
+import { Tile as TileLayer, Vector } from "ol/layer";
 import { XYZ, TileWMS, Vector as VectorWMS } from "ol/source";
-import { Style, Circle, Fill, Stroke, Icon } from "ol/style";
+import { Style, Stroke, Icon } from "ol/style";
 import { Point, LineString } from "ol/geom";
 import {
   DragRotateAndZoom,
@@ -148,12 +148,10 @@ const onoffWMS = () => {
 let sttPoint, dstPoint;
 let time1, time2;
 
-function setRoute(sttPoint, dstPoint) {
+function setRoute(sttPoint, dstPoint, routeName) {
   return new Promise((resolve, reject) => {
 
-  const dstSource = new VectorWMS({
-    name: "dstSource",
-  });
+  const dstSource = new VectorWMS();
   let dstLayer = new Vector({
     source: dstSource,
     name: "dstLayer",
@@ -176,19 +174,20 @@ function setRoute(sttPoint, dstPoint) {
   })
     .then((response) => response.json())
     .then((data) => {
+      const coord1s = [];
+      const coord2s = [];
+
+      // time1 및 time2를 가져오기
       time1 = data.time1;
       time2 = data.time2;
 
-      const coords1 = [];
-      const coords2 = [];
-
-      coords1.push(start_x, start_y);
-      coords2.push(start_x, start_y);
+      coord1s.push(start_x, start_y);
+      coord2s.push(start_x, start_y);
 
       for (var i = 0; i < data.route1.length; i++) {
         var datalists1 = data.route1[i];
 
-        coords1.push(datalists1.X, datalists1.Y);
+        coord1s.push(datalists1.X, datalists1.Y);
 
         if (i === 0) {
           map.getView().setCenter([datalists1.X, datalists1.Y]);
@@ -198,7 +197,7 @@ function setRoute(sttPoint, dstPoint) {
       for (var i = 0; i < data.route2.length; i++) {
         var datalists2 = data.route2[i];
 
-        coords2.push(datalists2.X, datalists2.Y);
+        coord2s.push(datalists2.X, datalists2.Y);
 
         if (i === 0) {
           map.getView().setCenter([datalists2.X, datalists2.Y]);
@@ -206,8 +205,8 @@ function setRoute(sttPoint, dstPoint) {
         }
       }
 
-      coords1.push(arrive_x, arrive_y);
-      coords2.push(arrive_x, arrive_y);
+      coord1s.push(arrive_x, arrive_y);
+      coord2s.push(arrive_x, arrive_y);
 
       let dstIconStyle = new Style({
         image: new Icon({
@@ -234,55 +233,65 @@ function setRoute(sttPoint, dstPoint) {
       });
 
       let path1 = [];
-      for (let i = 0; i < coords1.length; i += 2) {
-        path1.push([coords1[i], coords1[i + 1]]);
+      for (let i = 0; i < coord1s.length; i += 2) {
+        path1.push([coord1s[i], coord1s[i + 1]]);
       }
       let path2 = [];
-      for (let i = 0; i < coords2.length; i += 2) {
-        path2.push([coords2[i], coords2[i + 1]]);
+      for (let i = 0; i < coord2s.length; i += 2) {
+        path2.push([coord2s[i], coord2s[i + 1]]);
       }
 
       const lineString1 = new LineString(path1);
       const feature1 = new Feature({
         geometry: lineString1,
-        name: "feature1",
       });
       const lineString2 = new LineString(path2);
       const feature2 = new Feature({
         geometry: lineString2,
-        name: "feature2",
       });
 
       feature1.setStyle(
         new Style({
           stroke: new Stroke({
-            color: [63, 72, 204, 0.9], //#3F48CC
-            width: 13,
+            color: [90, 137, 214, 0.9], //#5689d6
+            width: 12,
             lineCap: "round",
             lineJoin: "round",
+            zIndex: 10,
           }),
         })
       );
       feature2.setStyle(
         new Style({
           stroke: new Stroke({
-            color: [86, 130, 214, 0.9], //#5689d6
+            color: [93, 238, 110, 0.9],
             width: 10,
             lineCap: "round",
             lineJoin: "round",
+            zIndex: 10,
           }),
         })
       );
 
       dstMarker.setStyle(dstIconStyle);
       srcMarker.setStyle(srcIconStyle);
+      // dstLayer에 feature 추가
+      if (routeName === "both") {
+        dstSource.addFeature(feature1);
+        dstSource.addFeature(feature2);
+      } else if (routeName === "route1") {
+        dstSource.clear(); // 이전 경로 제거
+        dstSource.addFeature(feature1);
+      } else if (routeName === "route2") {
+        dstSource.clear(); // 이전 경로 제거
+        dstSource.addFeature(feature2);
+      }
       dstSource.addFeature(dstMarker);
       dstSource.addFeature(srcMarker);
-      dstSource.addFeature(feature1);
-      dstSource.addFeature(feature2);
 
       dstLayer.setZIndex(2);
       map.addLayer(dstLayer);
+
       resolve(null);
     })
     .catch((error) => {
@@ -310,10 +319,6 @@ const Map = ({ children }) => {
   // 검색바 표시 상태
   const [showSearchBars, setShowSearchBars] = useState(false);
 
-  const handleSafeRouteClick = () => {
-    setShowSearchBars(!showSearchBars); // 상태 토글
-  };
-
   // 새로운 상태 추가
   const [showDivs, setShowDivs] = useState(false);
 
@@ -322,9 +327,6 @@ const Map = ({ children }) => {
 
     initMap();
     onoffWMS();
-
-    //route();
-    //setRoute();
 
     setMapObj({ map });
     return () => map.setTarget(undefined); // 렌더링 누적 방지
@@ -417,7 +419,6 @@ const Map = ({ children }) => {
       // 함수 처리
       // 1. 마커
       // 2. 결과
-      console.log(data);
       for (var i = 0; i < data.response.result.items.length; i++) {
         var datalists = data.response.result.items[i];
 
@@ -470,7 +471,6 @@ const Map = ({ children }) => {
           document.querySelector("#content2").textContent = content;
           popup.setPosition(coordinates);
 
-          console.log(document.querySelector(".popup-content"));
         } else {
           // 마커 밖을 선택하면 레이어 삭제
           popup.setPosition(undefined);
@@ -580,9 +580,6 @@ const Map = ({ children }) => {
         grade = getGrade(currentLoc) - 1; //Math.floor(Math.random()*2 )+3; 3or4
         setPrevGrade(grade);
         if (selectedGrade > 0 && selectedGrade < grade && prevGrade !== grade) {
-          console.log(
-            "알림 실행 : 사용자가 선택 + 선택 값보다 큰 등급 + 등급의 변화 "
-          );
           const message = { key1: "NOTIFICATION", key2: `${grade}` };
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
         }
@@ -642,31 +639,6 @@ const Map = ({ children }) => {
     }
   };
 
-  //     if (response.response.result && response.response.result.items) {
-  //       if (type === "start") {
-  //         sttPoint = response.response.result.items[0].point; // 출발지 좌표 설정
-  //       } else {
-  //         dstPoint = response.response.result.items[0].point; // 도착지 좌표 설정
-  //       }
-  //     } else {
-  //       console.log("검색 결과가 없습니다.");
-  //     }
-  //   } catch (error) {
-  //     console.error("검색 중 오류 발생:", error);
-  //   }
-  // };
-
-  // 출발지와 도착지 입력란 변경 핸들러
-  // const handleAddressChange = (value, type) => {
-  //   if (type === "start") {
-  //     setStartAddress(value);
-  //     searchAddress(value, type);
-  //   } else {
-  //     setEndAddress(value);
-  //     searchAddress(value, type);
-  //   }
-  // };
-
   // 출발지와 도착지 입력란 변경 핸들러
   const handleAddressChange = async (value, type) => {
     if (type === "start") {
@@ -699,11 +671,26 @@ const Map = ({ children }) => {
     setActiveInput(null);
   };
 
-  // 새로운 상태 변수 추가
-  const [showSearchResultDivs, setShowSearchResultDivs] = useState(false);
 
   // 검색 버튼의 onClick 이벤트 수정
-  const handleSearchButtonClick = () => {
+  const handleSearchButtonClick = async () => {
+
+    // 출발지와 목적지 검색 및 경로 설정
+    await searchAddress(startAddress, "start");
+    await searchAddress(endAddress, "end");
+
+    map.getLayers().forEach((layer) => {
+      if (layer.get("name") === "dstLayer") {
+        map.removeLayer(layer);
+      }
+    });
+
+      // 사이드바 닫기
+      closeMenu();
+
+    // 경로 설정 함수 호출 (시간 상태 업데이트 포함)
+    await setRoute(sttPoint, dstPoint, "both");
+
     setShowDivs(true); // Divs 표시
   };
 
@@ -713,26 +700,34 @@ const Map = ({ children }) => {
     await searchAddress(startAddress, "start");
     await searchAddress(endAddress, "end");
 
+    // 모든 'dstLayer' 레이어를 지도에서 제거
     map.getLayers().forEach((layer) => {
       if (layer.get("name") === "dstLayer") {
-        if(layer.getSource()){
-          let source = layer.getSource("name", "dstSource");
-          source.getFeatures().forEach((feature) => {
-              if(feature.get("name") === "feature1" && divId === 1){
-                source.removeFeature(feature);
-                console.log("feature1");
-              }else if(feature.get("name") === "feature2" && divId === 2){
-              source.removeFeature(feature);
-              console.log("feature2");
-              }
-            })
-          }
-        }})
+        map.removeLayer(layer);
+      }
+    });
+
+    let name = ""; // name 변수 초기화
+
+    // divId에 따라 name 설정
+    if (divId === 1) {
+      name = "route1";
+    } else if (divId === 2) {
+      name = "route2";
+    }
+
+    // name 변수를 이용하여 경로 설정
+    if (name === "route1") {
+      setRoute(sttPoint, dstPoint, "route1", name);
+    } else if (name === "route2") {
+      setRoute(sttPoint, dstPoint, "route2", name);
+    }
+
+    // 사이드바 닫기
+    closeMenu();
 
     // 경로 버튼 숨기기
     setShowDivs(false);
-
-    console.log(`Div ${divId} clicked!`);
   };
 
   return (
@@ -777,20 +772,7 @@ const Map = ({ children }) => {
             </div>
             {/* 검색 버튼 */}
             <div id="searchButtonContainer" className="button-container">
-              <button onClick={async() => {
-                try{
-                  map.getLayers().forEach((layer) => {
-                    if (layer.get("name") === "dstLayer") {
-                      map.removeLayer(layer);
-                    }
-                  });
-                  closeMenu();
-                  await setRoute(sttPoint, dstPoint);
-                  handleSearchButtonClick();
-                } catch(error){
-                    console.error("Error", error);
-                  };
-                }}>검색</button>
+              <button onClick={handleSearchButtonClick}>검색</button>
             </div>
             <div
               className={`route-container ${showDivs ? "visible" : "hidden"}`}
@@ -802,16 +784,17 @@ const Map = ({ children }) => {
                     className={showDivs ? "visible" : "hidden"}
                     onClick={() => handleDivClick(1)}
                   >
-                    경로 1
-                    <p>{time1}</p>
+                    빠른 경로
+                    <p>예상 시간<br />:{time1}분</p>
                   </div>
                   <div
                     id="route2"
                     className={showDivs ? "visible" : "hidden"}
                     onClick={() => handleDivClick(2)}
                   >
-                    경로 2 
-                    <p>{time2}</p>
+                    안전 경로
+                    {'\n'}
+                    <p>예상 시간<br />:{time2}분</p>
                   </div>
                 </>
               )}
@@ -862,11 +845,11 @@ const Map = ({ children }) => {
                       </ul>
                     )}
                   </div>
-                  <button className="nav-safe" onClick={() => openMenu()}>
-                    {/* handleSafeRouteClick */}
-                    안전
-                    <br />
-                    길찾기
+                  <button onClick={() => openMenu()} className="nav-safe">
+                    <img
+                      src={process.env.PUBLIC_URL + "/safewalk.png"}
+                      alt="안전 길찾기"
+                    />
                   </button>
                   {/* 지도 컨테이너 내에 버튼 추가 */}
                   <button
@@ -888,77 +871,6 @@ const Map = ({ children }) => {
                   </button>
                 </div>
               </nav>
-              {/* 검색바 조건부 렌더링 - 지도 내부로 이동 */}
-              {showSearchBars && (
-                <div className="search-bar-container">
-                  {/* 출발지 검색바 */}
-                  <div className="search-bar">
-                    <input
-                      type="text"
-                      value={startAddress}
-                      onChange={(e) =>
-                        handleAddressChange(e.target.value, "start")
-                      }
-                      placeholder="출발지"
-                    />
-                    <div className="autocomplete-container">
-                      {startSuggestions.map((item, index) => (
-                        <div
-                          key={index}
-                          onClick={() => {
-                            setStartAddress(item.address.road);
-                            sttPoint = item.point;
-                            setStartSuggestions([]);
-                          }}
-                        >
-                          {item.address.road}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {/* 도착지 검색바 */}
-                  <div className="search-bar">
-                    <input
-                      type="text"
-                      value={endAddress}
-                      onChange={(e) =>
-                        handleAddressChange(e.target.value, "end")
-                      }
-                      placeholder="도착지"
-                    />
-                    <div className="autocomplete-container">
-                      {endSuggestions.map((item, index) => (
-                        <div
-                          key={index}
-                          onClick={() => {
-                            setEndAddress(item.address.road);
-                            dstPoint = item.point;
-                            setEndSuggestions([]);
-                          }}
-                        >
-                          {item.address.road}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {/* 검색 버튼 */}
-                  <div className="button-container">
-                    <button
-                      onClick={() => {
-                        searchAddress(startAddress, "start");
-                        searchAddress(endAddress, "end");
-                        map.getLayers().forEach((layer) => {
-                          if (layer.get("name") === "dstLayer") {
-                            map.removeLayer(layer);
-                          }
-                        });
-                      }}
-                    >
-                      검색
-                    </button>
-                  </div>
-                </div>
-              )}
               <div
                 className="switch_wrapper"
                 style={{ position: "absolute", top: "48px", right: "0.3rem" }} // 예시 위치
