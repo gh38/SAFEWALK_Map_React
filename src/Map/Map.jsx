@@ -701,8 +701,8 @@ const Map = ({ children }) => {
   // Div 클릭 핸들러 수정
   const handleDivClick = async (divId) => {
     // 경로 탐색 로직
-    await searchAddress(startAddress, "start");
-    await searchAddress(endAddress, "end");
+    // await searchAddress(startAddress, "start");
+    // await searchAddress(endAddress, "end");
 
     // 모든 'dstLayer' 레이어를 지도에서 제거
     map.getLayers().forEach((layer) => {
