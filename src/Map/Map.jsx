@@ -677,9 +677,9 @@ const Map = ({ children }) => {
   // 검색 버튼의 onClick 이벤트 수정
   const handleSearchButtonClick = async () => {
 
-    // 출발지와 목적지 검색 및 경로 설정
-    await searchAddress(startAddress, "start");
-    await searchAddress(endAddress, "end");
+    // // 출발지와 목적지 검색 및 경로 설정
+    // await searchAddress(startAddress, "start");
+    // await searchAddress(endAddress, "end");
 
     map.getLayers().forEach((layer) => {
       if (layer.get("name") === "dstLayer") {
