@@ -448,9 +448,9 @@ button {
 }
 .sidebar .closebtn {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 4rem;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 2rem;
   color: #848383;
   z-index: 1000;
 }
