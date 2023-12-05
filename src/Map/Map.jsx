@@ -750,7 +750,7 @@ const Map = ({ children }) => {
                 placeholder="출발지"
                 value={startAddress}
                 onChange={(e) => handleAddressChange(e.target.value, "start")}
-                style={{width:'49%'}}
+                style={{width:'48%'}}
               />
               <input
                 type="text"
@@ -758,7 +758,7 @@ const Map = ({ children }) => {
                 placeholder="목적지"
                 value={endAddress}
                 onChange={(e) => handleAddressChange(e.target.value, "end")}
-                style={{width:'49%'}}
+                style={{width:'48%'}}
               />
 
               {/* 공통 자동완성 결과 컨테이너 */}
