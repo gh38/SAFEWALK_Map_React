@@ -254,7 +254,7 @@ function setRoute(sttPoint, dstPoint, routeName) {
         new Style({
           stroke: new Stroke({
             color: [90, 137, 214, 0.9], //#5689d6
-            width: 12,
+            width: 9,
             lineCap: "round",
             lineJoin: "round",
             zIndex: 10,
@@ -264,8 +264,8 @@ function setRoute(sttPoint, dstPoint, routeName) {
       feature2.setStyle(
         new Style({
           stroke: new Stroke({
-            color: [93, 238, 110, 0.9],
-            width: 10,
+            color: [147, 209, 154, 0.9],
+            width: 7,
             lineCap: "round",
             lineJoin: "round",
             zIndex: 10,
