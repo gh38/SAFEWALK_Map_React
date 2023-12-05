@@ -510,8 +510,6 @@ button {
 .search-fields-container {
   max-width: 40rem;
   width: 80%;
-  right: 0;
-  margin-right: 3rem;
   position: absolute;
   top: 25px;
   display: flex; /* flexbox 레이아웃 사용 */
