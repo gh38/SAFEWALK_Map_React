@@ -790,7 +790,7 @@ const Map = ({ children }) => {
                     className={showDivs ? "visible" : "hidden"}
                     onClick={() => handleDivClick(1)}
                   >
-                    빠른 경로
+                    최적 경로
                     <p>예상 시간<br />:{t1}분</p>
                   </div>
                   <div
