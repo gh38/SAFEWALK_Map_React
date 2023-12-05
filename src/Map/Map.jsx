@@ -892,7 +892,7 @@ const Map = ({ children }) => {
                   className="notification-dropdown-menu"
                   style={{
                     position: "absolute",
-                    top: "calc(0.4rem + 2.5rem + 0.4rem + 0.3rem)",
+                    top: "calc(0.4rem + 2.5rem + 0.4rem + 1.5rem)",
                     left: "0.3rem",
                   }}
                 >
