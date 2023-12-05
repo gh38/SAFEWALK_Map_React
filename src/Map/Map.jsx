@@ -671,6 +671,8 @@ const Map = ({ children }) => {
     setActiveInput(null);
   };
 
+  const [t1, setT1] = useState(null);
+  const [t2, setT2] = useState(null);
 
   // 검색 버튼의 onClick 이벤트 수정
   const handleSearchButtonClick = async () => {
@@ -690,6 +692,8 @@ const Map = ({ children }) => {
 
     // 경로 설정 함수 호출 (시간 상태 업데이트 포함)
     await setRoute(sttPoint, dstPoint, "both");
+    setT1(time1);
+    setT2(time2);
 
     setShowDivs(true); // Divs 표시
   };
@@ -721,7 +725,7 @@ const Map = ({ children }) => {
       setRoute(sttPoint, dstPoint, "route1", name);
     } else if (name === "route2") {
       setRoute(sttPoint, dstPoint, "route2", name);
-    }
+    }    
 
     // 사이드바 닫기
     closeMenu();
@@ -785,7 +789,7 @@ const Map = ({ children }) => {
                     onClick={() => handleDivClick(1)}
                   >
                     빠른 경로
-                    <p>예상 시간<br />:{time1}분</p>
+                    <p>예상 시간<br />:{t1}분</p>
                   </div>
                   <div
                     id="route2"
@@ -794,7 +798,7 @@ const Map = ({ children }) => {
                   >
                     안전 경로
                     {'\n'}
-                    <p>예상 시간<br />:{time2}분</p>
+                    <p>예상 시간<br />:{t2}분</p>
                   </div>
                 </>
               )}
