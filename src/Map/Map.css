@@ -512,7 +512,7 @@ button {
   top: 25px;
   display: flex; /* flexbox 레이아웃 사용 */
   align-items: center; /* 세로 방향 중앙 정렬 */
-  gap: 10px; /* 요소들 사이의 간격 */
+  gap: 3px; /* 요소들 사이의 간격 */
 }
 
 .route-container {
