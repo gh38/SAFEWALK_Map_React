@@ -146,14 +146,9 @@ const onoffWMS = () => {
 // 5. 경로
 
 let sttPoint, dstPoint;
-let time1, time2;
 
 function setRoute(sttPoint, dstPoint) {
-  return new Promise((resolve, reject) => {
-
-  const dstSource = new VectorWMS({
-    name: "dstSource",
-  });
+  const dstSource = new VectorWMS();
   let dstLayer = new Vector({
     source: dstSource,
     name: "dstLayer",
@@ -176,19 +171,16 @@ function setRoute(sttPoint, dstPoint) {
   })
     .then((response) => response.json())
     .then((data) => {
-      time1 = data.time1;
-      time2 = data.time2;
+      const coord1s = [];
+      const coord2s = [];
 
-      const coords1 = [];
-      const coords2 = [];
-
-      coords1.push(start_x, start_y);
-      coords2.push(start_x, start_y);
+      coord1s.push(start_x, start_y);
+      coord2s.push(start_x, start_y);
 
       for (var i = 0; i < data.route1.length; i++) {
         var datalists1 = data.route1[i];
 
-        coords1.push(datalists1.X, datalists1.Y);
+        coord1s.push(datalists1.X, datalists1.Y);
 
         if (i === 0) {
           map.getView().setCenter([datalists1.X, datalists1.Y]);
@@ -198,7 +190,7 @@ function setRoute(sttPoint, dstPoint) {
       for (var i = 0; i < data.route2.length; i++) {
         var datalists2 = data.route2[i];
 
-        coords2.push(datalists2.X, datalists2.Y);
+        coord2s.push(datalists2.X, datalists2.Y);
 
         if (i === 0) {
           map.getView().setCenter([datalists2.X, datalists2.Y]);
@@ -206,8 +198,8 @@ function setRoute(sttPoint, dstPoint) {
         }
       }
 
-      coords1.push(arrive_x, arrive_y);
-      coords2.push(arrive_x, arrive_y);
+      coord1s.push(arrive_x, arrive_y);
+      coord2s.push(arrive_x, arrive_y);
 
       let dstIconStyle = new Style({
         image: new Icon({
@@ -234,30 +226,28 @@ function setRoute(sttPoint, dstPoint) {
       });
 
       let path1 = [];
-      for (let i = 0; i < coords1.length; i += 2) {
-        path1.push([coords1[i], coords1[i + 1]]);
+      for (let i = 0; i < coord1s.length; i += 2) {
+        path1.push([coord1s[i], coord1s[i + 1]]);
       }
       let path2 = [];
-      for (let i = 0; i < coords2.length; i += 2) {
-        path2.push([coords2[i], coords2[i + 1]]);
+      for (let i = 0; i < coord2s.length; i += 2) {
+        path2.push([coord2s[i], coord2s[i + 1]]);
       }
 
       const lineString1 = new LineString(path1);
       const feature1 = new Feature({
         geometry: lineString1,
-        name: "feature1",
       });
       const lineString2 = new LineString(path2);
       const feature2 = new Feature({
         geometry: lineString2,
-        name: "feature2",
       });
 
       feature1.setStyle(
         new Style({
           stroke: new Stroke({
-            color: [63, 72, 204, 0.9], //#3F48CC
-            width: 13,
+            color: [90, 137, 214, 0.9], //#5689d6
+            width: 10,
             lineCap: "round",
             lineJoin: "round",
           }),
@@ -283,13 +273,10 @@ function setRoute(sttPoint, dstPoint) {
 
       dstLayer.setZIndex(2);
       map.addLayer(dstLayer);
-      resolve(null);
     })
     .catch((error) => {
       console.error("Error:", error);
-      reject(error);
     });
-  });
 }
 
 function openMenu() {
@@ -316,6 +303,21 @@ const Map = ({ children }) => {
 
   // 새로운 상태 추가
   const [showDivs, setShowDivs] = useState(false);
+
+  const handleSearchClick = () => {
+    // 검색 로직
+    searchAddress(startAddress, "start");
+    searchAddress(endAddress, "end");
+    map.getLayers().forEach((layer) => {
+      if (layer.get("name") === "dstLayer") {
+        map.removeLayer(layer);
+      }
+    });
+    setRoute(sttPoint, dstPoint);
+
+    // Divs 표시
+    setShowDivs(true);
+  };
 
   useEffect(() => {
     //Map 객체 생성 및 vworld 지도 설정
@@ -713,21 +715,22 @@ const Map = ({ children }) => {
     await searchAddress(startAddress, "start");
     await searchAddress(endAddress, "end");
 
+    // 모든 'dstLayer' 레이어를 지도에서 제거
     map.getLayers().forEach((layer) => {
       if (layer.get("name") === "dstLayer") {
-        if(layer.getSource()){
-          let source = layer.getSource("name", "dstSource");
-          source.getFeatures().forEach((feature) => {
-              if(feature.get("name") === "feature1" && divId === 1){
-                source.removeFeature(feature);
-                console.log("feature1");
-              }else if(feature.get("name") === "feature2" && divId === 2){
-              source.removeFeature(feature);
-              console.log("feature2");
-              }
-            })
-          }
-        }})
+        map.removeLayer(layer);
+      }
+    });
+
+    // divId에 따라 다른 경로를 설정
+    if (divId === 1) {
+      setRoute(sttPoint, dstPoint, "route1");
+    } else if (divId === 2) {
+      setRoute(sttPoint, dstPoint, "route2");
+    }
+
+    // 사이드바 닫기
+    closeMenu();
 
     // 경로 버튼 숨기기
     setShowDivs(false);
@@ -777,20 +780,7 @@ const Map = ({ children }) => {
             </div>
             {/* 검색 버튼 */}
             <div id="searchButtonContainer" className="button-container">
-              <button onClick={async() => {
-                try{
-                  map.getLayers().forEach((layer) => {
-                    if (layer.get("name") === "dstLayer") {
-                      map.removeLayer(layer);
-                    }
-                  });
-                  closeMenu();
-                  await setRoute(sttPoint, dstPoint);
-                  handleSearchButtonClick();
-                } catch(error){
-                    console.error("Error", error);
-                  };
-                }}>검색</button>
+              <button onClick={handleSearchButtonClick}>검색</button>
             </div>
             <div
               className={`route-container ${showDivs ? "visible" : "hidden"}`}
@@ -803,15 +793,13 @@ const Map = ({ children }) => {
                     onClick={() => handleDivClick(1)}
                   >
                     경로 1
-                    <p>{time1}</p>
                   </div>
                   <div
                     id="route2"
                     className={showDivs ? "visible" : "hidden"}
                     onClick={() => handleDivClick(2)}
                   >
-                    경로 2 
-                    <p>{time2}</p>
+                    경로 2
                   </div>
                 </>
               )}
@@ -860,6 +848,31 @@ const Map = ({ children }) => {
                           </li>
                         ))}
                       </ul>
+                    )}
+                    {/* 조건부 렌더링을 사용한 Divs 생성 */}
+                    {showDivs && (
+                      <>
+                        <div
+                          onClick={() => handleDivClick(1)}
+                          style={
+                            {
+                              /* CSS 스타일링 */
+                            }
+                          }
+                        >
+                          Div 1
+                        </div>
+                        <div
+                          onClick={() => handleDivClick(2)}
+                          style={
+                            {
+                              /* CSS 스타일링 */
+                            }
+                          }
+                        >
+                          Div 2
+                        </div>
+                      </>
                     )}
                   </div>
                   <button className="nav-safe" onClick={() => openMenu()}>
@@ -952,6 +965,7 @@ const Map = ({ children }) => {
                             map.removeLayer(layer);
                           }
                         });
+                        setRoute(sttPoint, dstPoint);
                       }}
                     >
                       검색

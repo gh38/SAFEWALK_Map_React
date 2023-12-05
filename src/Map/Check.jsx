@@ -146,14 +146,9 @@ const onoffWMS = () => {
 // 5. 경로
 
 let sttPoint, dstPoint;
-let time1, time2;
 
-function setRoute(sttPoint, dstPoint) {
-  return new Promise((resolve, reject) => {
-
-  const dstSource = new VectorWMS({
-    name: "dstSource",
-  });
+function setRoute(sttPoint, dstPoint, routeName) {
+  const dstSource = new VectorWMS();
   let dstLayer = new Vector({
     source: dstSource,
     name: "dstLayer",
@@ -176,19 +171,33 @@ function setRoute(sttPoint, dstPoint) {
   })
     .then((response) => response.json())
     .then((data) => {
-      time1 = data.time1;
-      time2 = data.time2;
+      const coord1s = [];
+      const coord2s = [];
 
-      const coords1 = [];
-      const coords2 = [];
+      // route1 및 route2를 가져오기
+      const route1 = data.route1;
+      const route2 = data.route2;
 
-      coords1.push(start_x, start_y);
-      coords2.push(start_x, start_y);
+      // time1 및 time2를 가져오기
+      const time1 = data.time1;
+      const time2 = data.time2;
+
+      // 경로를 coord1s와 coord2s에 추가
+      route1.forEach((point) => {
+        coord1s.push(point.X, point.Y);
+      });
+
+      route2.forEach((point) => {
+        coord2s.push(point.X, point.Y);
+      });
+
+      coord1s.push(start_x, start_y);
+      coord2s.push(start_x, start_y);
 
       for (var i = 0; i < data.route1.length; i++) {
         var datalists1 = data.route1[i];
 
-        coords1.push(datalists1.X, datalists1.Y);
+        coord1s.push(datalists1.X, datalists1.Y);
 
         if (i === 0) {
           map.getView().setCenter([datalists1.X, datalists1.Y]);
@@ -198,7 +207,7 @@ function setRoute(sttPoint, dstPoint) {
       for (var i = 0; i < data.route2.length; i++) {
         var datalists2 = data.route2[i];
 
-        coords2.push(datalists2.X, datalists2.Y);
+        coord2s.push(datalists2.X, datalists2.Y);
 
         if (i === 0) {
           map.getView().setCenter([datalists2.X, datalists2.Y]);
@@ -206,8 +215,8 @@ function setRoute(sttPoint, dstPoint) {
         }
       }
 
-      coords1.push(arrive_x, arrive_y);
-      coords2.push(arrive_x, arrive_y);
+      coord1s.push(arrive_x, arrive_y);
+      coord2s.push(arrive_x, arrive_y);
 
       let dstIconStyle = new Style({
         image: new Icon({
@@ -234,30 +243,28 @@ function setRoute(sttPoint, dstPoint) {
       });
 
       let path1 = [];
-      for (let i = 0; i < coords1.length; i += 2) {
-        path1.push([coords1[i], coords1[i + 1]]);
+      for (let i = 0; i < coord1s.length; i += 2) {
+        path1.push([coord1s[i], coord1s[i + 1]]);
       }
       let path2 = [];
-      for (let i = 0; i < coords2.length; i += 2) {
-        path2.push([coords2[i], coords2[i + 1]]);
+      for (let i = 0; i < coord2s.length; i += 2) {
+        path2.push([coord2s[i], coord2s[i + 1]]);
       }
 
       const lineString1 = new LineString(path1);
       const feature1 = new Feature({
         geometry: lineString1,
-        name: "feature1",
       });
       const lineString2 = new LineString(path2);
       const feature2 = new Feature({
         geometry: lineString2,
-        name: "feature2",
       });
 
       feature1.setStyle(
         new Style({
           stroke: new Stroke({
-            color: [63, 72, 204, 0.9], //#3F48CC
-            width: 13,
+            color: [90, 137, 214, 0.9], //#5689d6
+            width: 10,
             lineCap: "round",
             lineJoin: "round",
           }),
@@ -283,13 +290,14 @@ function setRoute(sttPoint, dstPoint) {
 
       dstLayer.setZIndex(2);
       map.addLayer(dstLayer);
-      resolve(null);
+
+      console.log("Time for route 1:", time1);
+      console.log("Time for route 2:", time2);
+      console.log(`Setting route: ${routeName}`);
     })
     .catch((error) => {
       console.error("Error:", error);
-      reject(error);
     });
-  });
 }
 
 function openMenu() {
@@ -713,21 +721,22 @@ const Map = ({ children }) => {
     await searchAddress(startAddress, "start");
     await searchAddress(endAddress, "end");
 
+    // 모든 'dstLayer' 레이어를 지도에서 제거
     map.getLayers().forEach((layer) => {
       if (layer.get("name") === "dstLayer") {
-        if(layer.getSource()){
-          let source = layer.getSource("name", "dstSource");
-          source.getFeatures().forEach((feature) => {
-              if(feature.get("name") === "feature1" && divId === 1){
-                source.removeFeature(feature);
-                console.log("feature1");
-              }else if(feature.get("name") === "feature2" && divId === 2){
-              source.removeFeature(feature);
-              console.log("feature2");
-              }
-            })
-          }
-        }})
+        map.removeLayer(layer);
+      }
+    });
+
+    // divId에 따라 다른 경로를 설정
+    if (divId === 1) {
+      setRoute(sttPoint, dstPoint, "route1");
+    } else if (divId === 2) {
+      setRoute(sttPoint, dstPoint, "route2");
+    }
+
+    // 사이드바 닫기
+    closeMenu();
 
     // 경로 버튼 숨기기
     setShowDivs(false);
@@ -777,20 +786,7 @@ const Map = ({ children }) => {
             </div>
             {/* 검색 버튼 */}
             <div id="searchButtonContainer" className="button-container">
-              <button onClick={async() => {
-                try{
-                  map.getLayers().forEach((layer) => {
-                    if (layer.get("name") === "dstLayer") {
-                      map.removeLayer(layer);
-                    }
-                  });
-                  closeMenu();
-                  await setRoute(sttPoint, dstPoint);
-                  handleSearchButtonClick();
-                } catch(error){
-                    console.error("Error", error);
-                  };
-                }}>검색</button>
+              <button onClick={handleSearchButtonClick}>검색</button>
             </div>
             <div
               className={`route-container ${showDivs ? "visible" : "hidden"}`}
@@ -803,15 +799,13 @@ const Map = ({ children }) => {
                     onClick={() => handleDivClick(1)}
                   >
                     경로 1
-                    <p>{time1}</p>
                   </div>
                   <div
                     id="route2"
                     className={showDivs ? "visible" : "hidden"}
                     onClick={() => handleDivClick(2)}
                   >
-                    경로 2 
-                    <p>{time2}</p>
+                    경로 2
                   </div>
                 </>
               )}
@@ -888,77 +882,6 @@ const Map = ({ children }) => {
                   </button>
                 </div>
               </nav>
-              {/* 검색바 조건부 렌더링 - 지도 내부로 이동 */}
-              {showSearchBars && (
-                <div className="search-bar-container">
-                  {/* 출발지 검색바 */}
-                  <div className="search-bar">
-                    <input
-                      type="text"
-                      value={startAddress}
-                      onChange={(e) =>
-                        handleAddressChange(e.target.value, "start")
-                      }
-                      placeholder="출발지"
-                    />
-                    <div className="autocomplete-container">
-                      {startSuggestions.map((item, index) => (
-                        <div
-                          key={index}
-                          onClick={() => {
-                            setStartAddress(item.address.road);
-                            sttPoint = item.point;
-                            setStartSuggestions([]);
-                          }}
-                        >
-                          {item.address.road}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {/* 도착지 검색바 */}
-                  <div className="search-bar">
-                    <input
-                      type="text"
-                      value={endAddress}
-                      onChange={(e) =>
-                        handleAddressChange(e.target.value, "end")
-                      }
-                      placeholder="도착지"
-                    />
-                    <div className="autocomplete-container">
-                      {endSuggestions.map((item, index) => (
-                        <div
-                          key={index}
-                          onClick={() => {
-                            setEndAddress(item.address.road);
-                            dstPoint = item.point;
-                            setEndSuggestions([]);
-                          }}
-                        >
-                          {item.address.road}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {/* 검색 버튼 */}
-                  <div className="button-container">
-                    <button
-                      onClick={() => {
-                        searchAddress(startAddress, "start");
-                        searchAddress(endAddress, "end");
-                        map.getLayers().forEach((layer) => {
-                          if (layer.get("name") === "dstLayer") {
-                            map.removeLayer(layer);
-                          }
-                        });
-                      }}
-                    >
-                      검색
-                    </button>
-                  </div>
-                </div>
-              )}
               <div
                 className="switch_wrapper"
                 style={{ position: "absolute", top: "48px", right: "0.3rem" }} // 예시 위치
