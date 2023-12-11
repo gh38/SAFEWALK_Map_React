@@ -75,7 +75,7 @@ function initMap() {
   map.addControl(new ScaleLine());
   map.addControl(new Zoom());
   getCurrentLocation();
-  window.ReactNativeWebView.postMessage(JSON.stringify(2));
+  window.ReactNativeWebView.postMessage(JSON.stringify({ key1: "NOTIFICATION", key2: `2` }));
 
   document.getElementById("culocation").addEventListener("click", () => {
     map.getView().setCenter(currentLoc);
