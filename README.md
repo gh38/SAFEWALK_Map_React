@@ -1,3 +1,5 @@
+-- SAFEWALK 웹 버전 완성본입니다 --
+
 * 구현 참고 - https://openlayers.org/en/latest/apidoc/module-ol_Map-Map.html
 
 * 배포 참고 - https://velog.io/@sksgur3217/React-GitHub-Pages-%EB%B0%B0%ED%8F%AC%ED%95%98%EA%B8%B0
