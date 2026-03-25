@@ -1,4 +1,4 @@
--- SAFEWALK 웹 버전 완성본입니다 --
+-- SAFEWALK 웹 뷰 완성본입니다 --
 
 * 구현 참고 - https://openlayers.org/en/latest/apidoc/module-ol_Map-Map.html
 
